@@ -1,0 +1,105 @@
+karmarzonk = "saoteeg"
+gwazgal = "saoteeg09"
+
+while True:
+    karmarzonk1 = input("karmarzi naam a belk: ")
+    gwazgal1 = input("gwazgal a belk: ")
+    if karmarzonk == karmarzonk1 and gwazgal == gwazgal1:
+        break
+    else:
+        print("Tai datagen karmarzi naam O gwazgal rad ant.")
+
+from tkinter import filedialog
+from tkinter import *
+import pygame
+import os
+
+bendat = Tk()
+bendat.title("Saoteeg")
+bendat.geometry("500x300")
+
+pygame.mixer.init()
+
+parzon = Menu(bendat)
+bendat.config(menu = parzon)
+
+saot = []
+anoogen_saot = ""
+dashtagen_saot = False
+
+def saot_gechini():
+    global anoogen_saot
+    bendat.pong = filedialog.askdirectory()
+
+    for yksaot in os.listdir(bendat.pong):
+        naam, ext = os.path.splitext(yksaot)
+        if ext == '.mp3':
+            saot.append(yksaot)
+
+    for yksaot in saot:
+        saotani_parzonag.insert("end", yksaot)
+
+    saotani_parzonag.selection_set(0)
+    anoogen_saot = saot[saotani_parzonag.curselection()[0]]
+
+def bungejkn():
+    global anoogen_saot, dashtagen_saot
+    if not dashtagen_saot:
+        pygame.mixer.music.load(os.path.join(bendat.pong,anoogen_saot))
+        pygame.mixer.music.play()
+    else:
+        pygame.mixer.music.unpause()
+        dashtagen_saot = False
+
+def daragi():
+    global bedar
+    pygame.mixer.music.pause()
+    bedar = True
+
+def demabragi():
+    global anoogen_saot, dashtagen_saot
+    try:
+        saotani_parzonag.select_clear(0, END)
+        saotani_parzonag.selection_set(saot.index(anoogen_saot) + 1)
+        anoogen_saot = saot[saotani_parzonag.curselection()[0]]
+        bungejkn()
+    except:
+        pass
+
+def pushtahargi():
+    global anoogen_saot, dashtagen_saot
+    try:
+        saotani_parzonag.select_clear(0, END)
+        saotani_parzonag.selection_set(saot.index(anoogen_saot) - 1)
+        anoogen_saot = saot[saotani_parzonag.curselection()[0]]
+        bungejkn()
+    except:
+        pass
+
+junzaragi_parzon = Menu(parzon, tearoff = False)
+junzaragi_parzon.add_command(label = 'dak (folder) e bezeer', command = saot_gechini)
+parzon.add_cascade(label = 'parzon', menu = junzaragi_parzon )
+
+saotani_parzonag = Listbox(bendat, bg = "black", fg = "white", width = 100, height = 15)
+saotani_parzonag.pack()
+
+bungej_btn_aks = PhotoImage(file = 'play.png')
+bedar_btn_aks = PhotoImage(file = 'pause.png')
+demi_btn_aks = PhotoImage(file = 'next.png')
+gwastagen_btn_aks = PhotoImage(file = 'previous.png')
+
+btni_jah = Frame(bendat)
+btni_jah.pack()
+
+bungej_btn = Button(btni_jah, image = bungej_btn_aks, borderwidth = 0, command = bungejkn)
+bedar_btn = Button(btni_jah, image = bedar_btn_aks, borderwidth = 0, command = daragi)
+demi_btn = Button(btni_jah, image = demi_btn_aks, borderwidth = 0, command = demabragi)
+gwastagen_btn = Button(btni_jah, image = gwastagen_btn_aks, borderwidth = 0, command = pushtahargi)
+
+bungej_btn.grid(row = 0, column = 1, padx = 7, pady = 10)
+bedar_btn.grid(row = 0, column = 2, padx = 7, pady = 10)
+demi_btn.grid(row = 0, column = 3, padx = 7, pady = 10)
+gwastagen_btn.grid(row = 0, column = 0, padx = 7, pady = 10)
+
+
+bendat.mainloop()
